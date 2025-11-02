@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>月月公主生日快乐 💖</title>
+<style>
+  :root{
+    --bg:#ffe6f2;
+    --accent:#ff9bc2;
+    --shadow:0 20px 40px rgba(255,100,150,0.15);
+    --radius:14px;
+    --font:"Comic Sans MS","PingFang SC","Noto Sans CJK SC",sans-serif;
+  }
+  html,body{
+    height:100%;
+    margin:0;
+    background:linear-gradient(180deg,#fff0f6 0%,#ffe6f2 100%);
+    font-family:var(--font);
+    overflow:hidden;
+  }
+  .title{
+    position:fixed;
+    top:30%;
+    width:100%;
+    text-align:center;
+    font-size:36px;
+    color:#ff7ca8;
+    font-weight:700;
+    opacity:0;
+    animation:fadeIn 3s ease forwards;
+  }
+  @keyframes fadeIn{
+    0%{opacity:0;transform:translateY(20px);}
+    100%{opacity:1;transform:translateY(0);}
+  }
+
+  /* 飘落爱心 */
+  .heart{
+    position:fixed;
+    top:-10px;
+    color:#ffb6d5;
+    font-size:20px;
+    opacity:0.8;
+    animation:fall 6s linear forwards;
+  }
+  @keyframes fall{
+    to{
+      transform:translateY(110vh) rotate(360deg);
+      opacity:0;
+    }
+  }
+
+  /* 控制区 */
+  .controls{
+    position:fixed;
+    left:12px;
+    top:12px;
+    z-index:9999;
+    display:flex;
+    gap:8px;
+  }
+  .btn{
+    background:var(--accent);
+    border:none;
+    padding:8px 12px;
+    border-radius:999px;
+    cursor:pointer;
+    color:#fff;
+    font-weight:600;
+    box-shadow:var(--shadow);
+  }
+
+  /* 弹窗样式 */
+  .window{
+    position:fixed;
+    width:300px;
+    border-radius:var(--radius);
+    background:#fff;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    transform-origin:center;
+    z-index:1000;
+    will-change:transform,opacity,left,top;
+  }
+  .win-head{
+    height:26px;
+    background:linear-gradient(90deg,#ffb6d5,#ff8fb6);
+    display:flex;
+    align-items:center;
+    padding:5px 10px;
+    color:#fff;
+    font-weight:600;
+    font-size:13px;
+  }
+  .win-body{
+    padding:14px;
+    color:#ff5a91;
+    font-size:17px;
+    text-align:center;
+    line-height:1.4;
+  }
+
+  .pop-enter{animation:popIn .4s cubic-bezier(.2,.9,.3,1);}
+  @keyframes popIn{
+    0%{transform:translateY(20px) scale(.8);opacity:0;}
+    60%{transform:translateY(-5px) scale(1.05);opacity:1;}
+    100%{transform:translateY(0) scale(1);}
+  }
+</style>
+</head>
+<body>
+  <div class="title">🎂 月月公主生日快乐～要天天开心哟(づ｡◕‿‿◕｡)づ 💖</div>
+  <audio autoplay loop>
+    <source src="https://cdn.pixabay.com/download/audio/2021/09/16/audio_67f62de34d.mp3?filename=happy-birthday-13248.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="controls">
+    <button id="toggleBtn" class="btn">暂停</button>
+    <button id="clearBtn" class="btn">清空</button>
+  </div>
+
+<script>
+/* 爱心飘落 */
+function createHeart(){
+  const heart=document.createElement("div");
+  heart.className="heart";
+  heart.style.left=Math.random()*100+"vw";
+  heart.style.fontSize=12+Math.random()*20+"px";
+  heart.textContent="💖";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),6000);
+}
+setInterval(createHeart,200);
+
+/* 弹窗内容 */
+const messages=[
+  "月月公主生日快乐～要天天笑眯眯(๑>◡<๑)♡",
+  "今天是全世界最可爱的日子，因为是月月公主的生日～🎂",
+  "愿月月公主永远被爱包围，甜甜蜜蜜每一天🍰",
+  "月月公主～要像小太阳一样闪闪发光✨",
+  "今天的蛋糕都比不过你可爱(⁄ ⁄•⁄ω⁄•⁄ ⁄)",
+  "生日快乐呀月月公主～快收下全宇宙的爱心💗",
+  "小心愿：月月公主永远幸福，永远漂亮٩(๑❛ᴗ❛๑)۶",
+  "愿你的世界永远粉粉的，软软的，甜甜的🍓"
+];
+
+let running=true;
+const popups=[];
+function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+
+function createPopup(){
+  if(!running)return;
+  const win=document.createElement("div");
+  win.className="window pop-enter";
+  win.style.left=rand(10,window.innerWidth-320)+"px";
+  win.style.top=rand(10,window.innerHeight-160)+"px";
+  win.innerHTML=`
+    <div class="win-head">月月公主专属💗</div>
+    <div class="win-body">${pick(messages)}</div>
+  `;
+  win.addEventListener("click",()=>win.remove());
+  document.body.appendChild(win);
+  popups.push(win);
+  if(popups.length>150){
+    const old=popups.shift();
+    if(old)old.remove();
+  }
+}
+
+setInterval(createPopup,400);
+
+/* 控制按钮 */
+document.getElementById("toggleBtn").addEventListener("click",()=>{
+  running=!running;
+  document.getElementById("toggleBtn").textContent=running?"暂停":"继续";
+});
+document.getElementById("clearBtn").addEventListener("click",()=>{
+  popups.forEach(p=>p.remove());
+  popups.length=0;
+});
+</script>
+</body>
+</html>
